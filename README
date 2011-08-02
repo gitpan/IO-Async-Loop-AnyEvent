@@ -1,0 +1,38 @@
+NAME
+    "IO::Async::Loop::AnyEvent" - use "IO::Async" with "AnyEvent"
+
+SYNOPSIS
+     use IO::Async::Loop::AnyEvent;
+
+     my $loop = IO::Async::Loop::AnyEvent->new();
+
+     $loop->add( ... );
+
+     $loop->add( IO::Async::Signal->new(
+           name => 'HUP',
+           on_receipt => sub { ... },
+     ) );
+
+     $loop->loop_forever();
+
+DESCRIPTION
+    This subclass of IO::Async::Loop uses AnyEvent to perform its work.
+
+CONSTRUCTOR
+  $loop = IO::Async::Loop::AnyEvent->new
+    This function returns a new instance of a "IO::Async::Loop::AnyEvent"
+    object.
+
+BUGS
+    *   "watch_idle" and "unwatch_idle" are unimplemented, as a satisfactory
+        implementation does not seem easy to come by. "AnyEvent" doesn't
+        portably guarantee a "later"-like event.
+
+    *   The implementation of the "loop_once" method requires the use of an
+        undocumented method "AnyEvent->one_event". This happens to work at
+        the time of writing, but as it is undocumented it may be subject to
+        change.
+
+AUTHOR
+    Paul Evans <leonerd@leonerd.org.uk>
+
