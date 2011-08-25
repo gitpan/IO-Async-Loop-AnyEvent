@@ -7,7 +7,7 @@ WriteMakefile
           'PREREQ_PM' => {
                            'AnyEvent' => 0,
                            'IO::Async' => '0.24',
-                           'IO::Async::LoopTests' => '0.32',
+                           'IO::Async::LoopTests' => '0.43',
                            'Test::More' => 0
                          },
           'INSTALLDIRS' => 'site',

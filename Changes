@@ -1,4 +1,10 @@
 Revision history for IO-Async-Loop-AnyEvent
 
+0.02    CHANGES:
+         * Implement ->watch_idle and ->unwatch_idle. Observe a bug that it
+           doesn't work correctly on nested IO::Async-AnyEvent-IO::Async cases
+         * Added unit tests that demonstrate mixed IO::Async + AnyEvent event
+           handling works correctly
+
 0.01    First version, released on an unsuspecting world.
 

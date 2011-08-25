@@ -8,7 +8,7 @@ package IO::Async::Loop::AnyEvent;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 use constant API_VERSION => '0.33';
 
 use base qw( IO::Async::Loop );
@@ -57,7 +57,7 @@ sub new
 
    my $self = $class->SUPER::__new( %args );
 
-   $self->{$_} = {} for qw( watch_r watch_w watch_time watch_signal watch_child );
+   $self->{$_} = {} for qw( watch_r watch_w watch_time watch_signal watch_idle watch_child);
 
    return $self;
 }
@@ -186,12 +186,35 @@ sub unwatch_signal
 
 sub watch_idle
 {
-   croak "Not implemented";
+   my $self = shift;
+   my %params = @_;
+
+   my $when = delete $params{when} or croak "Expected 'when'";
+
+   my $code = delete $params{code} or croak "Expected 'code' as a CODE ref";
+
+   $when eq "later" or croak "Expected 'when' to be 'later'";
+
+   my $key;
+   my $w = AnyEvent->timer(
+      after => 0,
+      cb    => sub {
+         delete $self->{watch_idle}{$key};
+         goto &$code;
+      },
+   );
+
+   $key = "$w";
+   $self->{watch_idle}{$key} = $w;
+   return $key;
 }
 
 sub unwatch_idle
 {
-   croak "Not implemented";
+   my $self = shift;
+   my ( $id ) = @_;
+
+   delete $self->{watch_idle}{$id};
 }
 
 sub watch_child
@@ -216,15 +239,27 @@ sub unwatch_child
 
 =item *
 
-C<watch_idle> and C<unwatch_idle> are unimplemented, as a satisfactory
-implementation does not seem easy to come by. C<AnyEvent> doesn't portably
-guarantee a C<later>-like event.
+C<watch_idle> and C<unwatch_idle> don't work properly against
+C<AnyEvent::Impl::IOAsync>. At least, the unit tests fail, and some scheduled
+CODErefs never get executed, and sit in the internal queue of the inner-nested
+C<IO::Async::Loop> that C<AnyEvent::Impl::IOAsync> itself constructed. An easy
+workaround here is simply to pick another AnyEvent model, by using the
+C<PERL_ANYEVENT_MODEL> environment variable.
+
+That all said, I am honestly surprised this is the only thing that breaks,
+when C<IO::Async> is nested upon C<AnyEvent> itself running atop another
+C<IO::Async>.
 
 =item *
 
 The implementation of the C<loop_once> method requires the use of an
 undocumented method C<< AnyEvent->one_event >>. This happens to work at the
 time of writing, but as it is undocumented it may be subject to change.
+
+The C<loop_forever> method does not rely on this undocumented method, so
+should be safe from upstream changes. Furthremore, if C<AnyEvent> rather than
+C<IO::Async> remains ultimately in control of the runtime, by waiting on
+condvars, this should not be problematic.
 
 =back
 
