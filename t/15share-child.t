@@ -18,14 +18,14 @@ sub make_child
    return $kid;
 }
 
+my $loop = IO::Async::Loop::AnyEvent->new;
+
 my $anyevent_status;
 
 my $w = AnyEvent->child(
    pid => make_child,
    cb  => sub { $anyevent_status = $_[1] },
 );
-
-my $loop = IO::Async::Loop::AnyEvent->new;
 
 my $ioasync_status;
 

@@ -18,6 +18,8 @@ sub make_readable_handle
    return $reader;
 }
 
+my $loop = IO::Async::Loop::AnyEvent->new;
+
 my $anyevent_line;
 
 my $anyevent_buffer = "";
@@ -30,8 +32,6 @@ my $w = AnyEvent->io(
       $anyevent_line = $1 if $anyevent_buffer =~ s/^(.*)\n//;
    },
 );
-
-my $loop = IO::Async::Loop::AnyEvent->new;
 
 my $ioasync_line;
 

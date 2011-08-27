@@ -1,5 +1,11 @@
 Revision history for IO-Async-Loop-AnyEvent
 
+0.03    CHANGES:
+         * Updated to cope with AnyEvent version 6 - one_event renamed to _poll
+         * Try to defer loading IO::Async::Loop, whose presence can confuse
+           AnyEvent and cause it to get into a cyclic IO::Async<->AnyEvent
+           dependency loop at runtime
+
 0.02    CHANGES:
          * Implement ->watch_idle and ->unwatch_idle. Observe a bug that it
            doesn't work correctly on nested IO::Async-AnyEvent-IO::Async cases

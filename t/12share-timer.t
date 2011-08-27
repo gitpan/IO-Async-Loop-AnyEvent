@@ -9,14 +9,14 @@ use AnyEvent;
 use IO::Async::Loop::AnyEvent;
 use IO::Async::Timer::Countdown;
 
+my $loop = IO::Async::Loop::AnyEvent->new;
+
 my $anyevent_timer;
 
 my $w = AnyEvent->timer(
    after => 1,
    cb    => sub { $anyevent_timer++ },
 );
-
-my $loop = IO::Async::Loop::AnyEvent->new;
 
 my $ioasync_timer;
 

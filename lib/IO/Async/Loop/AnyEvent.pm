@@ -8,14 +8,23 @@ package IO::Async::Loop::AnyEvent;
 use strict;
 use warnings;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 use constant API_VERSION => '0.33';
 
-use base qw( IO::Async::Loop );
+# Force AnyEvent to detect a suitable model now, before we load
+# IO::Async::Loop. Otherwise, AnyEvent will use AnyEvent::Impl::IOAsync
+# which causes a circular dependency at runtime, leading to such problems as:
+#
+#   Deep recursion on subroutine "AnyEvent::Impl::IOAsync::io" at ...
+
+use AnyEvent;
+BEGIN { AnyEvent::detect() }
+
+use parent qw( IO::Async::Loop );
 
 use Carp;
 
-use AnyEvent;
+use constant ANYEVENT_6 => $AnyEvent::VERSION >= 6;
 
 =head1 NAME
 
@@ -74,8 +83,14 @@ sub loop_once
       $w = AnyEvent->timer( after => $timeout, cb => sub { $cv->send } );
    }
 
-   # This method isn't technically documented by AnyEvent
-   AnyEvent->one_event;
+   if( ANYEVENT_6 ) {
+      # This method isn't technically documented by AnyEvent
+      AnyEvent->_poll;
+   }
+   else {
+      # This method isn't technically documented by AnyEvent
+      AnyEvent->one_event;
+   }
 }
 
 sub loop_forever
@@ -253,8 +268,9 @@ C<IO::Async>.
 =item *
 
 The implementation of the C<loop_once> method requires the use of an
-undocumented method C<< AnyEvent->one_event >>. This happens to work at the
-time of writing, but as it is undocumented it may be subject to change.
+undocumented C<AnyEvent> method (C<one_event> before version 6, C<_poll>
+thereafter). This happens to work at the time of writing, but as it is
+undocumented it may be subject to change.
 
 The C<loop_forever> method does not rely on this undocumented method, so
 should be safe from upstream changes. Furthremore, if C<AnyEvent> rather than

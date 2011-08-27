@@ -15,10 +15,10 @@ name: IO-Async-Loop-AnyEvent
 provides:
   IO::Async::Loop::AnyEvent:
     file: lib/IO/Async/Loop/AnyEvent.pm
-    version: 0.02
+    version: 0.03
 requires:
   AnyEvent: 0
   IO::Async: 0.24
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.02
+version: 0.03

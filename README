@@ -37,9 +37,9 @@ BUGS
         atop another "IO::Async".
 
     *   The implementation of the "loop_once" method requires the use of an
-        undocumented method "AnyEvent->one_event". This happens to work at
-        the time of writing, but as it is undocumented it may be subject to
-        change.
+        undocumented "AnyEvent" method ("one_event" before version 6,
+        "_poll" thereafter). This happens to work at the time of writing,
+        but as it is undocumented it may be subject to change.
 
         The "loop_forever" method does not rely on this undocumented method,
         so should be safe from upstream changes. Furthremore, if "AnyEvent"

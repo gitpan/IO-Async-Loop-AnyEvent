@@ -9,14 +9,14 @@ use AnyEvent;
 use IO::Async::Loop::AnyEvent;
 use IO::Async::Signal;
 
+my $loop = IO::Async::Loop::AnyEvent->new;
+
 my $anyevent_signal;
 
 my $w = AnyEvent->signal(
    signal => "INT",
    cb     => sub { $anyevent_signal = "INT" },
 );
-
-my $loop = IO::Async::Loop::AnyEvent->new;
 
 my $ioasync_signal;
 
